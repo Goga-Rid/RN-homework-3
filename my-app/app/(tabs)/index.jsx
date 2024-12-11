@@ -2,11 +2,14 @@ import React from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
 import { useState, useEffect } from 'react';
 import ProductCard from '../../components/ProductCard';
+import initDB  from '../../db/initDB';
 
 export default function Index() {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
+    //  initDB();
+    
     fetch('https://fakestoreapi.com/products')
       .then(response => response.json())
       .then(data => setProducts(data));
