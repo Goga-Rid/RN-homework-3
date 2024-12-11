@@ -1,13 +1,25 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View, FlatList } from 'react-native';
+import { useState } from 'react';
 
 export default function Cart() {
+  const [cartItems, setCartItems] = useState([]);
+
+  
+
+    const renderItem = ({ item }) => {
+        return (
+            <CartItem item={item} />
+        );
+    };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Корзина</Text>
-      <Text style={styles.paragraph}>
-        Здеся будут товары!!!
-      </Text>
+      <FlatList
+        data={cartItems}
+        renderItem={renderItem}
+        keyExtractor={item => item.id.toString()}
+      />
     </View>
   );
 }
