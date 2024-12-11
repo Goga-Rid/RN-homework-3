@@ -2,22 +2,26 @@ import React from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
 import { useState, useEffect } from 'react';
 import ProductCard from '../../components/ProductCard';
-import initDB  from '../../db/initDB';
+import { initDB, addToCart }  from '../../db/initDB';
 
 export default function Index() {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    //  initDB();
+    // initDB(); раскомментировать, если нужно инициализировать базу данных!!!!
     
     fetch('https://fakestoreapi.com/products')
       .then(response => response.json())
       .then(data => setProducts(data));
   }, []);
+
+  const handleAddToCart = async (product) => {
+    await addToCart(product);
+  };
   
 
   const renderItem = ({ item }) => (
-    <ProductCard product={item}/>
+    <ProductCard product={item} addToCart={handleAddToCart}/>
   );
 
 
