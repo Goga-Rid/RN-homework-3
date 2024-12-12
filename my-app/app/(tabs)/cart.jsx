@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, FlatList } from 'react-native';
-import { getCartItems } from '../../db/database';
+import { StyleSheet, View, FlatList, Text } from 'react-native';
+import { getCartItems, removeFromCart } from '../../db/database';
 import CartItem from '../../components/CartItem';
 
 export default function Cart() {
@@ -14,7 +14,7 @@ export default function Cart() {
     const fetchCartItems = async () => {
         setRefreshing(true);
         try {
-            const cartItemsFromDB = getCartItems(); 
+            const cartItemsFromDB = await getCartItems(); 
             setCartItems(cartItemsFromDB); 
         } catch (error) {
             console.error('Ошибка при получении товаров из корзины:', error);
@@ -23,12 +23,22 @@ export default function Cart() {
         }
     };
 
+    const handleRemoveFromCart = async (item) => {
+        await removeFromCart(item.id); 
+        fetchCartItems(); 
+    };
 
     const renderItem = ({ item }) => {
         return (
-            <CartItem item={item} />
+            <CartItem item={item} onRemove={handleRemoveFromCart}/>
         );
     };
+
+    const renderEmptyComponent = () => (
+        <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>Корзина пуста.</Text>
+        </View>
+    );
 
     return (
         <View style={styles.container}>
@@ -38,6 +48,8 @@ export default function Cart() {
                 keyExtractor={item => item.id.toString()}
                 refreshing={refreshing}
                 onRefresh={fetchCartItems}
+                ListEmptyComponent={renderEmptyComponent}
+                contentContainerStyle={cartItems.length === 0 ? styles.emptyList : null}
             />
         </View>
     );
@@ -51,15 +63,20 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         padding: 20,
     },
-    title: {
-        fontSize: 34,
-        color: '#fffaf9',
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
-    paragraph: {
-        fontSize: 20,
-        color: '#fffaf9',
+    emptyContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
         textAlign: 'center',
+        
+    },
+    emptyText: {
+        fontSize: 25,
+        color: '#999',
+    },
+    emptyList: {
+        flexGrow: 1, 
+        justifyContent: 'center',
+        textAlign: 'center', 
     },
 });

@@ -51,10 +51,42 @@ export const getCartItems = () => {
         const db = SQLite.openDatabaseSync('cart.db');
 
         const cartItems = db.getAllSync('SELECT * FROM cart;', []);
-        db.closeSync();
 
         return cartItems;
     } catch (error) {
         console.error('Ошибка при получении товаров из корзины:', error);
+    }
+};
+
+export const deleteItem = (id) => {
+    try {
+        const db = SQLite.openDatabaseSync('cart.db');
+
+        db.runSync('DELETE FROM cart WHERE id = ?;', [id]);
+        db.closeSync();
+
+        console.log('Товар удален из корзины', id);
+    } catch (error) {
+        console.error('Ошибка при удалении товара из корзины:', error);
+    }
+};
+
+export const removeFromCart = (id) => {
+    try {
+        const db = SQLite.openDatabaseSync('cart.db');
+
+        db.runSync('UPDATE cart SET quantity = quantity - 1 WHERE id = ?;', [id]);
+        
+        const result = db.getAllSync('SELECT quantity FROM cart WHERE id = ?;', [id]);
+        if(result && result.length > 0) {
+            if(result[0].quantity <= 0) {
+                deleteItem(id);
+        }
+        else {
+            console.log('Количество товара уменьшено на 1 пункт', result[0].quantity);
+        }
+    }
+    } catch (error) {
+        console.error('Ошибка при удалении товара из корзины:', error);
     }
 };

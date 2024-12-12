@@ -27,8 +27,9 @@ export default function Index() {
         }
     };
 
-    const handleAddToCart = (product) => {
-        addToCart(product);
+    const handleAddToCart = async (product) => {
+        await addToCart(product);
+        fetchProducts();
     };
 
     const renderItem = ({ item }) => (
