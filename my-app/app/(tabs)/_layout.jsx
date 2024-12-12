@@ -1,9 +1,11 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { Text, StatusBar } from 'react-native';
 import { Tabs } from 'expo-router';
 
 export default function TabLayout() {
   return (
+  <>
+    <StatusBar barStyle="light-content" backgroundColor="#25292e" />
     <Tabs screenOptions={{
         tabBarActiveTintColor: '#fffaf9',
         headerStyle: {
@@ -29,5 +31,6 @@ export default function TabLayout() {
          )  
          }} />
     </Tabs>
+ </>
   );
 }

@@ -1,58 +1,56 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
-import { useState, useEffect } from 'react';
 import ProductCard from '../../components/ProductCard';
-import { initDB, addToCart }  from '../../db/initDB';
+import { initDB, addToCart, dropDB } from '../../db/database';
 
 export default function Index() {
-  const [products, setProducts] = useState([]);
+    const [products, setProducts] = useState([]);
 
-  useEffect(() => {
-    // initDB(); раскомментировать, если нужно инициализировать базу данных!!!!
-    
-    fetch('https://fakestoreapi.com/products')
-      .then(response => response.json())
-      .then(data => setProducts(data));
-  }, []);
+    useEffect(() => {
+        initDB();
+        // dropDB(); // Для сброса базы данных (раскомментируйте, если необходимо)
+        
+        fetch('https://fakestoreapi.com/products')
+            .then(response => response.json())
+            .then(data => setProducts(data));
+    }, []);
 
-  const handleAddToCart = async (product) => {
-    await addToCart(product);
-  };
-  
+    const handleAddToCart = (product) => {
+        addToCart(product);
+    };
 
-  const renderItem = ({ item }) => (
-    <ProductCard product={item} addToCart={handleAddToCart}/>
-  );
+    const renderItem = ({ item }) => (
+        <ProductCard product={item} addToCart={handleAddToCart} />
+    );
 
-
-  return (
-    <View>
-        <FlatList
-            data={products}
-            renderItem={renderItem}
-            keyExtractor={item => item.id.toString()}
-        />
-    </View>
-  );
+    return (
+        <View style={styles.container}>
+            <FlatList
+                data={products}
+                renderItem={renderItem}
+                keyExtractor={item => item.id.toString()}
+            />
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#25292e',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  title: {
-    fontSize: 34,
-    color: '#fffaf9',
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  paragraph: {
-    fontSize: 20,
-    color: '#fffaf9',
-    textAlign: 'center',
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#fffaf9',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 20,
+    },
+    title: {
+        fontSize: 34,
+        color: '#f3faf9',
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    paragraph: {
+        fontSize: 20,
+        color: '#fffaf9',
+        textAlign: 'center',
+    },
 });
