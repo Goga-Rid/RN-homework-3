@@ -5,15 +5,27 @@ import { initDB, addToCart, dropDB } from '../../db/database';
 
 export default function Index() {
     const [products, setProducts] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
 
     useEffect(() => {
         initDB();
         // dropDB(); // Для сброса базы данных (раскомментируйте, если необходимо)
         
-        fetch('https://fakestoreapi.com/products')
-            .then(response => response.json())
-            .then(data => setProducts(data));
+        fetchProducts();
     }, []);
+
+    const fetchProducts = async () => {
+        setRefreshing(true); 
+        try {
+            const response = await fetch('https://fakestoreapi.com/products');
+            const data = await response.json();
+            setProducts(data); 
+        } catch (error) {
+            console.error('Ошибка при получении данных:', error);
+        } finally {
+            setRefreshing(false); 
+        }
+    };
 
     const handleAddToCart = (product) => {
         addToCart(product);
@@ -29,6 +41,8 @@ export default function Index() {
                 data={products}
                 renderItem={renderItem}
                 keyExtractor={item => item.id.toString()}
+                refreshing={refreshing}
+                onRefresh={fetchProducts}
             />
         </View>
     );

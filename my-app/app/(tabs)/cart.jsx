@@ -5,15 +5,24 @@ import CartItem from '../../components/CartItem';
 
 export default function Cart() {
     const [cartItems, setCartItems] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
 
     useEffect(() => {
         fetchCartItems();
     }, []);
 
-    const fetchCartItems = () => {
-        const cartItemsFromDB = getCartItems();
-        setCartItems(cartItemsFromDB);
+    const fetchCartItems = async () => {
+        setRefreshing(true);
+        try {
+            const cartItemsFromDB = getCartItems(); 
+            setCartItems(cartItemsFromDB); 
+        } catch (error) {
+            console.error('Ошибка при получении товаров из корзины:', error);
+        } finally {
+            setRefreshing(false); 
+        }
     };
+
 
     const renderItem = ({ item }) => {
         return (
@@ -27,6 +36,8 @@ export default function Cart() {
                 data={cartItems}
                 renderItem={renderItem}
                 keyExtractor={item => item.id.toString()}
+                refreshing={refreshing}
+                onRefresh={fetchCartItems}
             />
         </View>
     );
